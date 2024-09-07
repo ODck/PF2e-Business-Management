@@ -1,0 +1,249 @@
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px;">
+  <div>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div style="flex: 1;">
+        <img id="businessImg" src="{{business.img}}" class="business-img-container" />
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <h3 class="b-header" style="margin-top: 20px;">Bonuses</h3>
+        <div style="margin-bottom: 5px;">
+          <label for="businessSize" style="margin-right: 5px;">Business Size</label>
+          <div style="display: flex; align-items: center;">
+            <span id="businessSize" style="margin-right: 5px;border: 1px solid #ccc; padding: 2px; flex:1; font-weight: bold;">{{investmentLabel
+                business.flags.business.investmentLevel
+              }}</span>
+            <button
+              onclick="decreaseInvestment('{{business.id}}')"
+              style="width: 30px;"
+            >-</button>
+            <button
+              onclick="increaseInvestment('{{business.id}}')"
+              style="width: 30px;"
+            >+</button>
+          </div>
+        </div>
+        <div style="margin-bottom: 5px;">
+          <label for="mod-workers" style="margin-right: 5px;">Workers proficiency</label>
+          <input
+            type="number"
+            id="mod-workers"
+            value="{{proficiencyBonus business.flags.business.workers}}"
+            readonly
+          />
+        </div>
+        <div style=" center; margin-bottom: 5px;">
+          <label for="mod-reputation" style="margin-right: 5px;">Owner Reputation (Level)</label>
+          <input type="number" id="mod-reputation" value="{{getOwnerLevel business.flags.business.ownerID}}" readonly />
+        </div>
+        <div style=" center; margin-bottom: 5px;">
+          <label for="mod-situation" style="margin-right: 5px;">Circumstance Bonus</label>
+          <input type="number" id="mod-situation" value="{{business.flags.business.businessMods.mod1}}" onchange="updateCircumstanceBonus('{{business.id}}', event)"/>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div style="display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center;"  class="b-header-name">
+        <input
+          class="b-input b-title-input"
+          type="text"
+          id="businessName"
+          value="{{business.name}}"
+          oninput="updateName(this.value, '{{business.id}}')"
+        />
+        <div
+          class="b-title-input"
+          style="display: flex; align-items: center; margin-left: 10px;"
+        >
+          <label for="businessLevel" style="margin-right: 5px; font-size: 25px">LEVEL</label>
+          <input
+            class="b-input b-title-input"
+            type="number"
+            id="businessLevel"
+            value="{{business.level}}"
+            min="-1"
+            max="20"
+            style="width: 30px;font-size: 25px"
+            oninput="updateLevel(this.value, '{{business.id}}')"
+          />
+        </div>
+      </div>
+      <!-- Drag Actor -->
+      <div id="drag-actor">
+          {{> dragActor}}
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+      <h3 class="b-header">Costs</h3>
+      <!-- Target DC and Income -->
+      <div style="display: flex; align-items: center; gap:5px;">
+        <div style="display: flex; align-items: center; flex:1;">
+          <label for="target-dc" style="margin-right: 5px; flex: 1;">Target DC:
+          </label>
+          <div style="display: flex; align-items: center; margin: 5px 0;">
+            <input
+              class="b-input"
+              type="number"
+              id="target-dc"
+              value="{{getTargetDC business.level}}"
+              style="width: 70px;"
+              readonly
+              disabled
+            />
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; flex:1;">
+          <label for="expected-salary" style="margin-right: 5px; flex:1;">Expected Income:
+          </label>
+          <div style="display: flex; align-items: center; margin: 5px 0;">
+            <input
+              class="b-input"
+              type="text"
+              id="expected-salary"
+              value="{{getExpectedSalaryFormatted business.level}}"
+              style="width: 70px;"
+              readonly
+              disabled
+            />
+          </div>
+        </div>
+      </div>
+      <!-- Workers Info -->
+      <div style="display: flex; align-items: center; gap:5px;">
+        <div style="display: flex; align-items: center; flex:1;">
+          <label for="max-workers" style="margin-right: 5px; flex:1;">Maximum Workers:
+          </label>
+          <div style="display: flex; align-items: center; margin: 5px 0;">
+            <input
+              class="b-input"
+              type="number"
+              id="max-workers"
+              value="{{getMaxWorkers business.flags.business.investmentLevel}}"
+              style="width: 70px;"
+              readonly
+              disabled
+            />
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; flex:1;">
+          <label for="workers-cost" style="margin-right: 5px; flex: 1;">Salary Cost:
+          </label>
+          <div style="display: flex; align-items: center; margin: 5px 0;">
+            <input
+              class="b-input"
+              type="text"
+              id="workers-cost"
+              value="{{getWorkersCost business.id}}"
+              style="width: 70px;"
+              readonly
+              disabled
+            />
+          </div>
+        </div>
+      </div>
+      <!-- Treasury Info -->
+      <div style="display: flex; align-items: center;">
+        <label
+          for="businessInvestment"
+          style="margin-right: 5px; flex: 1;"
+        >Treasury:
+        </label>
+        <div style="display: flex; align-items: center; margin: 0 0; flex:1;">
+          <i class="fas fa-coins" style="color: black; margin: 0 15px;"></i>
+          <input
+            class="b-input"
+            type="text"
+            id="goldInvestment"
+            value="{{formatGold business.flags.business.goldInvested}}"
+            oninput="updateGoldInvested(this.value, '{{business.id}}')"
+            disabled
+          />
+        </div>
+        <button
+          onclick="addGold('{{business.id}}')"
+          style="width: 60px;"
+        >
+          <i class="fa-solid fa-plus"></i>Add
+        </button>
+        <button
+          onclick="clearTreasury('{{business.id}}')"
+          style="width: 30px;"
+        >
+            <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <h3 class="b-header" style="margin-top: 5px;">Workers List</h3>
+      <!-- Add workers list here -->
+      <div style="display: flex; flex-direction: column;">
+        <button onclick="addWorker('{{business.id}}')" style="">+ Worker</button>
+        <div
+          id="workerList"
+          style="display: flex; flex-direction: column; margin-top: 10px;"
+        >
+          <!-- Workers list will be generated here -->
+          {{> workersTemplate}}
+        </div>
+      </div>
+    </div>
+    {{#if (userIsGM) }}
+      <div style="display: flex; flex-direction: column;">
+        <h3 class="b-header">Secret GM Notes</h3>
+        <textarea id="gmNotes" rows="4" cols="50" style="white-space: pre-wrap;" onchange="updateGMNotes(event, '{{business.id}}')">{{business.flags.business.gmNotes}}</textarea>
+      </div>
+    {{/if}}
+    <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+      <button
+        id="rollBusiness"
+        onclick="rollForBusiness('{{business.id}}')"
+      >Roll Business</button>
+    </div>
+  </div>
+</div>
+
+{{!-- <div style="display: flex; flex-direction: column;">
+      <h3>Decoration:</h3>
+      <div style="display: flex; align-items: center;">
+        <label
+          for="businessInvestment"
+          style="margin-right: 5px; flex: 1;"
+        >INVESTMENT:
+        </label>
+        <div style="display: flex; align-items: center;">
+          <span id="investmentTag" style="margin: 0 5px;">{{investmentLabel
+              business.flags.business.investmentLevel
+            }}</span>
+          <button
+            onclick="decreaseInvestment('{{business.id}}')"
+            style="width: 30px;"
+          >-</button>
+          <button
+            onclick="increaseInvestment('{{business.id}}')"
+            style="width: 30px;"
+          >+</button>
+        </div>
+      </div>
+      <!-- Add total investment -->
+      <div style="display: flex; align-items: center; margin: 5px 0;">
+        <i class="fas fa-coins" style="color: black; margin: 0 5px;"></i>
+        <input
+          class="b-input"
+          type="number"
+          id="goldInvestment"
+          value="{{business.flags.business.goldInvested}}"
+          oninput="updateGoldInvested(this.value, '{{business.id}}')"
+        />
+      </div>
+      <h3>Workers List:</h3>
+      <!-- Add workers list here -->
+      <div style="display: flex; flex-direction: column;">
+        <button onclick="addWorker('{{business.id}}')" style="">+ Worker</button>
+        <div
+          id="workerList"
+          style="display: flex; flex-direction: column; margin-top: 10px;"
+        >
+          <!-- Workers list will be generated here -->
+          {{> workersTemplate}}
+        </div>
+      </div>
+    </div> --}}

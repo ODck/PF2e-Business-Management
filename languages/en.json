@@ -1,0 +1,17 @@
+{
+    "COMBAT-NOTES":{
+        "dialog-title": "Combat Notes: Token Action Tracker",
+        "dialog-header": "has actions to remember"
+    },
+    "REMEMBER-NEW-ACTION":{
+        "dialog-title": "New Reminder",
+        "dialog-header": "Add the action you want to remember",
+        "action-effect": "Add as Effect",
+        "submit-button": "Submit",
+        "cancel-button": "Cancel"
+    },
+    "UI-NOTIFICATION":{
+        "new-action-ok": "Action added for the selected token",
+        "remove-action-error-owner": "You do not have permission to remove the reminder"
+    }
+}
