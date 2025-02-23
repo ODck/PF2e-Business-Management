@@ -32,12 +32,8 @@ The **Business Management** module for FoundryVTT provides a streamlined way to 
 ## Usage
 
 1. **Open the module**
-
-<a href="https://github.com/ODck/PF2e-Business-Management">
-    <p align="center">
-        <img src="https://raw.githubusercontent.com/ODck/PF2e-Business-Management/main/assets/Button.png" alt="Button">
-    </p>
-</a>
+   - Open the module’s business management interface.
+   - Create your initial Business.
    
 2. **View your Businesses**
 
