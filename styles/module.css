@@ -6,6 +6,28 @@
     border-radius: 3px;;
 }
 
+.image-edit-overlay {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.business-img-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.business-img-wrapper:hover .image-edit-overlay {
+    opacity: 1;
+}
+
 .b-title-input{
     font-variant: small-caps;
     margin-left: 0.375rem;

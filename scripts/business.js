@@ -1,12 +1,28 @@
-// business.js
+import { businessManager } from './business-manager.js';
+import { BusinessSettingsMenu } from './business-settings.js';
 
-class BusinessModule {
 
+export class BusinessModule {
+  static #instance = null;
   _activeDialog;
 
+  static getInstance() {
+    if (!BusinessModule.#instance) {
+      BusinessModule.#instance = new BusinessModule();
+    }
+    return BusinessModule.#instance;
+  }
+
+  constructor() {
+    if (BusinessModule.#instance) {
+      return BusinessModule.#instance;
+    }
+    BusinessModule.#instance = this;
+  }
+
   show() {
-    if(this._activeDialog != null){
-      if(this._activeDialog._minimized)
+    if (this._activeDialog != null) {
+      if (this._activeDialog._minimized)
         this._activeDialog.maximize();
       return;
     }
@@ -17,7 +33,7 @@ class BusinessModule {
       title: "Business Management",
       content: content,
       buttons: {},
-      close: () => { 
+      close: () => {
         Hooks.off("createActor", this.hookId);
         Hooks.off("deleteActor", this.hookId2);
         Hooks.off("updateActor", this.hookId3);
@@ -46,6 +62,8 @@ class BusinessModule {
           openBusinessSettings()
         });
 
+        this._addHelpButton(this._activeDialog);
+
       }
     });
     this._activeDialog.render(true, { resizable: true });
@@ -59,7 +77,7 @@ class BusinessModule {
     });
 
     this.hookId3 = Hooks.on("updateActor", (actor, data, options, userId) => {
-      if (actor.flags.business?.isBusiness === true ) {
+      if (actor.flags.business?.isBusiness === true) {
         // if(actor.flags.business.updatedFromSheet !== true){
         //   updateDialog(this._activeDialog);
         // }
@@ -72,6 +90,34 @@ class BusinessModule {
 
   refreshDialog() {
     updateDialog(this._activeDialog);
+  }
+  _addHelpButton(dialog) {
+    const helpButton = $(`
+        <a class="header-button help-button" title="Business Rules">
+            <i class="fas fa-question-circle"></i>
+        </a>
+    `);
+
+    helpButton.on('click', async (event) => {
+      event.preventDefault();
+      const pack = game.packs.get("pf2e-business.pf2e-business-rules");
+      if (!pack) {
+          ui.notifications.error("Business Rules compendium not found");
+          return;
+      }
+
+      const index = await pack.getIndex();
+      const firstEntry = index.contents[0];
+      if (!firstEntry) {
+          ui.notifications.error("No help document found in the compendium");
+          return;
+      }
+
+      const journal = await pack.getDocument(firstEntry._id);
+      journal.sheet.render(true);
+    });
+
+    dialog.element.find('.window-header .window-title').after(helpButton);
   }
 }
 
@@ -239,10 +285,10 @@ function manageBusiness(event, businesses) {
 }
 
 function openBusinessSettings() {
-  const settings = new BusinessSettings();
-  settings.render(true);
+  new BusinessSettingsMenu().render(true);
 }
 
+export const business = BusinessModule.getInstance();
 
 //TODO stop listening hooks
 //TODO resize window
