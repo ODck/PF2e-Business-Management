@@ -22,6 +22,7 @@ jobs:
             styles/ \
             languages/ \
             packs/ \
+            templates/ \
             LICENSE
 
       - name: Create Release
